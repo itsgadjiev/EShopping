@@ -16,7 +16,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
 #      - ASPNETCORE_URLS=http://*:9000
       - "DatabaseSettings__ConnectionString=mongodb://catalogdb:27017"
-      - "DatabaseSettings__DatabaseName=CatalogDb"
+      - "DatabaseSettings__DatabaseName=CatalogDb113332"
       - "DatabaseSettings__CollectionName=Products"
       - "DatabaseSettings__BrandsCollection=Brands"
       - "DatabaseSettings__TypesCollection=Types"

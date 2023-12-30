@@ -14,8 +14,8 @@ namespace Catalog.Application.Responses
         public string Summary { get; set; }
         public string Description { get; set; }
         public string ImageURL { get; set; } 
-        public ProductBrand ProductBrands { get; set; }
-        public ProductType ProductTypes { get; set; }
+        public ProductBrand Brands { get; set; }
+        public ProductType Types { get; set; }
 
         [BsonRepresentation(MongoDB.Bson.BsonType.Decimal128)]
         public decimal Price { get; set; }

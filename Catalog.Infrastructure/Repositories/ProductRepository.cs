@@ -48,7 +48,7 @@ namespace Catalog.Infrastructure.Repositories
 
         public async Task<IEnumerable<Product>> GetProductListByBrandAsync(string brandName)
         {
-            FilterDefinition<Product> filterDefinition = Builders<Product>.Filter.Eq(p => p.ProductBrands.Name, brandName);
+            FilterDefinition<Product> filterDefinition = Builders<Product>.Filter.Eq(p => p.Brands.Name, brandName);
 
             return await _catalogContext
                 .Products
