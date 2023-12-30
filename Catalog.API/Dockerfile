@@ -9,6 +9,9 @@ FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["Catalog.API/Catalog.API.csproj", "Catalog.API/"]
+COPY ["Catalog.Application/Catalog.Application.csproj", "Catalog.Application/"]
+COPY ["Catalog.Core/Catalog.Core.csproj", "Catalog.Core/"]
+COPY ["Catalog.Infrastructure/Catalog.Infrastructure.csproj", "Catalog.Infrastructure/"]
 RUN dotnet restore "./Catalog.API/./Catalog.API.csproj"
 COPY . .
 WORKDIR "/src/Catalog.API"

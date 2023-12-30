@@ -1,25 +1,20 @@
-var builder = WebApplication.CreateBuilder(args);
+using Catalog.API;
+using DnsClient;
+using Microsoft.AspNetCore.Hosting;
+using System.Diagnostics;
 
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-var app = builder.Build();
-
-if (app.Environment.IsDevelopment())
+internal class Program
 {
-    app.UseDeveloperExceptionPage();
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    public static void Main(string[] args)
+    {
+        Activity.DefaultIdFormat = ActivityIdFormat.W3C;
+        CreateHostBuilder(args).Build().Run();
+    }
+
+    private static IHostBuilder CreateHostBuilder(string[] args) =>
+        Host.CreateDefaultBuilder(args)
+            .ConfigureWebHostDefaults(webBuilder =>
+            {
+                webBuilder.UseStartup<Startup>();
+            })/*.UseSerilog(Logging.ConfigureLogger)*/;
 }
-
-app.UseRouting();
-app.UseStaticFiles();
-app.UseHttpsRedirection();
-app.UseAuthorization();
-app.UseEndpoints(endpoints =>
-{
-    app.MapControllers();
-});
-
-app.Run();
