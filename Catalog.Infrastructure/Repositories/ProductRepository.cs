@@ -1,5 +1,6 @@
 ﻿using Catalog.Core.Entities;
 using Catalog.Core.Repositories;
+using Catalog.Core.Specs;
 using Catalog.Infrastructure.Data;
 using MongoDB.Driver;
 using System.Xml.Linq;
@@ -74,14 +75,85 @@ namespace Catalog.Infrastructure.Repositories
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Product>> GetAllProductsAsync()
+        public async Task<Pagination<Product>> GetAllProductsAsync(CatalogSpecParams catalogSpecParams)
         {
-            return await _catalogContext
-                .Products
-                .FindAsync(x => true).Result
-                .ToListAsync();
+            var builder = Builders<Product>.Filter;
+            var filter = builder.Empty;
+
+            if (!string.IsNullOrEmpty(catalogSpecParams.Search))
+            {
+                var searchFilter = builder.Regex(x => x.Name, new MongoDB.Bson.BsonRegularExpression(catalogSpecParams.Search));
+                filter &= searchFilter;
+            }
+
+            if (!string.IsNullOrEmpty(catalogSpecParams.BrandId))
+            {
+                var brandFilter = builder.Eq(x => x.Brands.Id, catalogSpecParams.BrandId);
+                filter &= brandFilter;
+            }
+
+            if (!string.IsNullOrEmpty(catalogSpecParams.TypeId))
+            {
+                var typeFilter = builder.Regex(x => x.Types.Id, catalogSpecParams.TypeId);
+                filter &= typeFilter;
+            }
+
+            if (!string.IsNullOrEmpty(catalogSpecParams.Sort))
+            {
+                return new Pagination<Product>
+                {
+                    PageSize = catalogSpecParams.PageSize,
+                    PageIndex = catalogSpecParams.PageIndex,
+                    Data = await DataFilter(catalogSpecParams, filter),
+                    Count = await _catalogContext.Products.CountDocumentsAsync(p => true)
+                };
+            }
+
+            return new Pagination<Product>
+            {
+                PageSize = catalogSpecParams.PageSize,
+                PageIndex = catalogSpecParams.PageIndex,
+                Data = await _catalogContext
+                    .Products
+                    .Find(filter)
+                    .Sort(Builders<Product>.Sort.Ascending("Name"))
+                    .Skip(catalogSpecParams.PageSize * (catalogSpecParams.PageIndex - 1))
+                    .Limit(catalogSpecParams.PageSize)
+                    .ToListAsync(),
+                Count = await _catalogContext.Products.CountDocumentsAsync(p => true)
+            };
         }
 
+        private async Task<IReadOnlyList<Product>> DataFilter(CatalogSpecParams catalogSpecParams, FilterDefinition<Product> filter)
+        {
+            switch (catalogSpecParams.Sort)
+            {
+                case "priceAsc":
+                    return await _catalogContext
+                        .Products
+                        .Find(filter)
+                        .Sort(Builders<Product>.Sort.Ascending("Price"))
+                        .Skip(catalogSpecParams.PageSize * (catalogSpecParams.PageIndex - 1))
+                        .Limit(catalogSpecParams.PageSize)
+                        .ToListAsync();
+                case "priceDesc":
+                    return await _catalogContext
+                        .Products
+                        .Find(filter)
+                        .Sort(Builders<Product>.Sort.Descending("Price"))
+                        .Skip(catalogSpecParams.PageSize * (catalogSpecParams.PageIndex - 1))
+                        .Limit(catalogSpecParams.PageSize)
+                        .ToListAsync();
+                default:
+                    return await _catalogContext
+                        .Products
+                        .Find(filter)
+                        .Sort(Builders<Product>.Sort.Ascending("Name"))
+                        .Skip(catalogSpecParams.PageSize * (catalogSpecParams.PageIndex - 1))
+                        .Limit(catalogSpecParams.PageSize)
+                        .ToListAsync();
+            }
+        }
         public async Task<bool> UpdateProductAsync(Product product)
         {
             var updateResult = await _catalogContext
