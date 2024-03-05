@@ -6,8 +6,6 @@ using MediatR;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Options;
-using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Reflection;
 
 namespace Basket.API;
@@ -58,7 +56,7 @@ public class Startup
         services.AddMediatR(typeof(CreateShoppingCartCommandHandler).GetTypeInfo().Assembly);
         services.AddScoped<IBasketRepository, BasketRepository>();
         services.AddAutoMapper(typeof(Startup));
-     
+
 
         services.AddSwaggerGen(options =>
         {
@@ -66,7 +64,7 @@ public class Startup
         });
         services.AddHealthChecks()
             .AddRedis(Configuration["CacheSettings:ConnectionString"], "Redis Health", HealthStatus.Degraded);
-        
+
         //Identity Server changes
         // var userPolicy = new AuthorizationPolicyBuilder()
         //     .RequireAuthenticatedUser()

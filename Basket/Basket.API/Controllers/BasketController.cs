@@ -1,5 +1,4 @@
 using Basket.Application.Commands;
-using Basket.Application.Mappers;
 using Basket.Application.Queries;
 using Basket.Application.Responses;
 using MediatR;
@@ -48,5 +47,5 @@ public class BasketController : ApiController
         return Ok(await _mediator.Send(query));
     }
 
-   
+
 }
