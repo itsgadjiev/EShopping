@@ -101,7 +101,7 @@ namespace Catalog.API.Controllers
         [ProducesResponseType(typeof(bool), 200)]
         public async Task<ActionResult> DeleteProduct(string id)
         {
-            var command=new DeleteProductByIdCommand(id);
+            var command = new DeleteProductByIdCommand(id);
             var result = await _mediator.Send(command);
             return Ok(result);
         }
