@@ -10,8 +10,9 @@ namespace Discount.Core.Repositories;
 public interface IDiscountRepository
 {
     Task<Coupon> GetDiscount(string productName);
-    Task<Coupon> UpdateDiscount(Coupon coupon);
-    Task<Coupon> CreateDiscount(Coupon coupon);
-    Task<Coupon> DeleteDiscount(string productName);
+    Task UpdateDiscount(Coupon coupon);
+    Task CreateDiscount(Coupon coupon);
+    Task DeleteDiscount(Coupon coupon);
+    Task SaveChanges(CancellationToken cancellationToken = default);
 
 }

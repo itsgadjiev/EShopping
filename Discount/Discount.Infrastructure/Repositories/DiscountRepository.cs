@@ -1,30 +1,39 @@
 ﻿using Discount.Core.Entities;
 using Discount.Core.Repositories;
-using Microsoft.Extensions.Configuration;
+using Discount.Infrastructure.Context;
+using Microsoft.EntityFrameworkCore;
 
 namespace Discount.Infrastructure.Repositories
 {
-    public class DiscountRepository()
+    public class DiscountRepository(AppDbContext appDbContext)
         : IDiscountRepository
     {
-        public Task<Coupon> CreateDiscount(Coupon coupon)
+        public async Task CreateDiscount(Coupon coupon)
         {
-            throw new NotImplementedException();
+            await appDbContext.Coupons.AddAsync(coupon);
         }
 
-        public Task<Coupon> DeleteDiscount(string productName)
+        public async Task DeleteDiscount(Coupon coupon)
         {
-            throw new NotImplementedException();
+            appDbContext.Remove(coupon);
         }
 
-        public Task<Coupon> GetDiscount(string productName)
+        public async Task<Coupon> GetDiscount(string productName)
         {
-            throw new NotImplementedException();
+            return appDbContext.Coupons.FirstOrDefault(x => x.ProductName == productName);
         }
 
-        public Task<Coupon> UpdateDiscount(Coupon coupon)
+        public async Task SaveChanges(CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            cancellationToken.ThrowIfCancellationRequested();
+            await appDbContext.SaveChangesAsync(cancellationToken);
+
+        }
+
+        public async Task UpdateDiscount(Coupon coupon)
+        {
+            appDbContext.Update(coupon);
+            appDbContext.Entry(coupon).State = EntityState.Modified;
         }
     }
 }
